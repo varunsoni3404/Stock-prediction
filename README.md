@@ -28,11 +28,14 @@ cd stock-price-predictor
 
 pip install -r requirements.txt
 
+make an .env file and 
 Set up API keys
 
 REDDIT_CLIENT_ID=your_reddit_client_id 
 REDDIT_CLIENT_SECRET=your_reddit_client_secret
 REDDIT_USER_AGENT=your_user_agent
+
+Run the app
 
 python app.py
 
