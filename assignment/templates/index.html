@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Price Predictor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { padding: 20px; }
+        .prediction-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .up { background-color: #d4edda; }
+        .down { background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Stock Price Predictor</h1>
+        
+        <form id="predictionForm" class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Stock Symbol</label>
+                <input type="text" class="form-control" name="symbol" required placeholder="e.g., ORCL, NKE, CVX, ADBE, MCD">
+            </div>
+            
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Predict</button>
+            </div>
+        </form>
+        
+        <div id="result" class="prediction-result">
+            <h3>Prediction Result</h3>
+            <p>Stock: <span id="stock"></span></p>
+            <p>Direction: <span id="prediction"></span></p>
+            <p>Confidence: <span id="confidence"></span></p>
+            <div id="stockData"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'prediction-result ' + (data.prediction.toLowerCase());
+                
+                document.getElementById('stock').textContent = data.symbol;
+                document.getElementById('prediction').textContent = data.prediction;
+                document.getElementById('confidence').textContent = data.confidence;
+                
+                // Display stock data used for prediction
+                document.getElementById('stockData').innerHTML = `
+                    <h4 class="mt-3">Current Stock Data</h4>
+                    <p>Open: ${data.stock_data.Open}</p>
+                    <p>High: ${data.stock_data.High}</p>
+                    <p>Low: ${data.stock_data.Low}</p>
+                    <p>Close: ${data.stock_data.Close}</p>
+                    <p>Volume: ${data.stock_data.Volume}</p>
+                `;
+            })
+            .catch(error => {
+                alert('Error: ' + error);
+            });
+        });
+    </script>
+</body>
+</html> 
